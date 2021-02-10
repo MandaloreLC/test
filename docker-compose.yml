@@ -1,0 +1,29 @@
+version: "3.5"
+
+services:
+  dashboards-service:
+    image: magidash:latest
+    ports:
+      - 8081:8081
+    depends_on:
+      - mysql-db
+    environment:
+      DB_HOST: host.docker.internal
+      DB_PORT: 3306
+      DB_NAME: definitions
+      DB_USERNAME: root
+      DB_PASSWORD: test123
+
+  mysql-db:
+    image: mysql:5
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: test123
+      MYSQL_DATABASE: definitions
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -ptest123 -e 'select 1'"]
+      interval: 5s
+      retries: 50
